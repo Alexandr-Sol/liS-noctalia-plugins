@@ -1,0 +1,40 @@
+{
+  "id": "amneziawg",
+  "name": "AmneziaWG",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "4.0.0",
+  "author": "Alexandr-Sol",
+  "license": "MIT",
+  "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
+  "description": "Connect to AmneziaWG VPN via awg-quick",
+  "tags": [
+    "Bar",
+    "Panel",
+    "Network",
+    "Privacy",
+    "VPN",
+    "AmneziaWG"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "barStyle": "icon",
+      "disconnectedColor": "none",
+      "connectedColor": "primary",
+      "disableToastNotifications": false,
+      "quickToggle": false,
+      "connectionMode": "proxy",
+      "autoStopZapret": false,
+      "defaultProfileName": "",
+      "profiles": "[]"
+    }
+  }
+}

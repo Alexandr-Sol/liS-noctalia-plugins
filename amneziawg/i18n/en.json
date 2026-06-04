@@ -1,0 +1,61 @@
+{
+  "panel": {
+    "profiles": "Profiles",
+    "emptyTitle": "No profiles configured",
+    "emptyDescription": "Add a profile in plugin settings",
+    "defaultProfile": "Default profile (right-click)",
+    "setDefault": "Set as default profile (right-click)"
+  },
+  "toast": {
+    "connected": "Connected via {name}",
+    "disconnected": "AmneziaWG disconnected",
+    "disconnectionError": "Failed to disconnect AmneziaWG",
+    "connectionError": "Failed to connect: {name}",
+    "zapretStarted": "Zapret started",
+    "zapretStopped": "Zapret stopped",
+    "zapretStartError": "Failed to start Zapret",
+    "zapretStopError": "Failed to stop Zapret"
+  },
+  "zapret": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "start": "Start",
+    "stop": "Stop",
+    "dpiBypass": "DPI Bypass"
+  },
+  "settings": {
+    "pluginSettings": "Plugin settings",
+    "connectedColor": "Connected color",
+    "connectedColorDescription": "Color for icon and text when connected",
+    "disconnectedColor": "Disconnected color",
+    "disconnectedColorDescription": "Color for icon and text when disconnected",
+    "disableToastNotifications": "Disable toast notifications",
+    "disableToastNotificationsDescription": "Do not show notifications on connect or disconnect",
+    "barStyle": "Bar widget style",
+    "barStyleDescription": "How the widget appears in the bar",
+    "barStyleIcon": "Round icon",
+    "barStylePill": "Pill with label",
+    "quickToggle": "Quick toggle on right-click",
+    "quickToggleDescription": "Right-click the icon to connect/disconnect without opening the menu",
+    "autoStopZapret": "Stop Zapret on connect",
+    "autoStopZapretDescription": "Automatically stop zapret.service when VPN connection is established",
+    "profiles": "VPN Profiles",
+    "noProfiles": "No profiles configured.",
+    "addProfile": "Add Profile",
+    "refreshProfiles": "Refresh profiles",
+    "autoConfigInfo": "Configs are automatically loaded from /etc/amnezia/amneziawg/",
+    "profileNamePlaceholder": "Profile name",
+    "profileConfigPlaceholder": "Path to .conf file (e.g. /etc/amneziawg/wg0.conf)"
+  },
+  "common": {
+    "connected": "Connected",
+    "connecting": "Connecting…",
+    "disconnected": "Disconnected",
+    "disconnecting": "Disconnecting…",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "close": "Close",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}

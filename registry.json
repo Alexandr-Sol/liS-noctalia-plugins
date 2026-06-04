@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "amneziawg",
+      "name": "AmneziaWG",
+      "version": "1.0.0",
+      "official": false,
+      "author": "Alexandr-Sol",
+      "description": "Connect to AmneziaWG VPN via awg-quick",
+      "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "Panel",
+        "Network",
+        "Privacy",
+        "VPN",
+        "AmneziaWG"
+      ],
+      "lastUpdated": "2026-06-04T09:00:00Z"
+    }
+  ]
+}
