@@ -93,6 +93,7 @@ ColumnLayout {
     }
 
     NToggle {
+        visible: main?.hasZapret ?? false
         Layout.fillWidth: true
         label: pluginApi?.tr("settings.autoStopZapret")
         description: pluginApi?.tr("settings.autoStopZapretDescription")

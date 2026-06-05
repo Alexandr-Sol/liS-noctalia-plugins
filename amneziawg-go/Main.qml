@@ -87,7 +87,7 @@ QtObject {
     property var _upProc: Process {
         running: false
         onExited: (exitCode) => {
-            Logger.i("AmneziaWG", "Up process exited with code: " + exitCode)
+            Logger.i("AmneziaWG-go", "Up process exited with code: " + exitCode)
             root.isLoading = false
             if (exitCode === 0) {
                 root.isConnected = true
@@ -105,7 +105,7 @@ QtObject {
     property var _downProc: Process {
         running: false
         onExited: (exitCode) => {
-            Logger.i("AmneziaWG", "Down process exited with code: " + exitCode)
+            Logger.i("AmneziaWG-go", "Down process exited with code: " + exitCode)
             root.isLoading = false
             if (exitCode === 0) {
                 root.isConnected = false
@@ -126,9 +126,22 @@ QtObject {
     property bool isZapretLoading: false
     property bool _zapretWasAutoStopped: false
 
+    property bool hasZapret: false
+
+    property var _zapretCheckProc: Process {
+        command: ["systemctl", "list-unit-files", "zapret.service"]
+        running: false
+        onExited: (exitCode) => {
+            root.hasZapret = (exitCode === 0)
+            if (root.hasZapret) {
+                _zapretStatusProc.running = true
+            }
+        }
+    }
+
     property var _zapretStatusProc: Process {
         command: ["systemctl", "is-active", "zapret"]
-        running: true
+        running: false
         stdout: SplitParser {
             onRead: (line) => {
                 root.isZapretActive = line.trim() === "active"
@@ -204,8 +217,8 @@ QtObject {
         activeProfile = name
         activeConfig = resolveConfig(config)
 
-        Logger.i("AmneziaWG", "Connecting with config: " + activeConfig)
-        _upProc.command = ["pkexec", "awg-quick", "up", activeConfig]
+        Logger.i("AmneziaWG-go", "Connecting with config: " + activeConfig)
+        _upProc.command = ["pkexec", "env", "WG_QUICK_USERSPACE_IMPLEMENTATION=amneziawg-go", "awg-quick", "up", activeConfig]
         _upProc.running = true
     }
 
@@ -214,8 +227,8 @@ QtObject {
         isLoading = true
         
         const configToUse = activeConfig || ("/etc/amnezia/amneziawg/" + activeProfile + ".conf")
-        Logger.i("AmneziaWG", "Disconnecting: " + configToUse)
-        _downProc.command = ["pkexec", "awg-quick", "down", configToUse]
+        Logger.i("AmneziaWG-go", "Disconnecting: " + configToUse)
+        _downProc.command = ["pkexec", "env", "WG_QUICK_USERSPACE_IMPLEMENTATION=amneziawg-go", "awg-quick", "down", configToUse]
         _downProc.running = true
     }
 
@@ -234,6 +247,7 @@ QtObject {
 
     Component.onCompleted: {
         loadProfiles()
-        Logger.i("AmneziaWG", "Plugin started")
+        _zapretCheckProc.running = true
+        Logger.i("AmneziaWG-go", "Plugin started")
     }
 }

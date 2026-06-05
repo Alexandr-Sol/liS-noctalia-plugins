@@ -1,12 +1,12 @@
 {
-  "id": "amneziawg",
-  "name": "AmneziaWG",
+  "id": "amneziawg-go",
+  "name": "AmneziaWG-go",
   "version": "1.0.0",
   "minNoctaliaVersion": "4.0.0",
   "author": "Alexandr-Sol",
   "license": "MIT",
   "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
-  "description": "Connect to AmneziaWG VPN via awg-quick",
+  "description": "Connect to AmneziaWG VPN in userspace via amneziawg-go",
   "tags": [
     "Bar",
     "Panel",

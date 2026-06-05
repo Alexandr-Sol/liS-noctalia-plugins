@@ -46,7 +46,7 @@ Item {
     implicitHeight: pill.height
 
     Component.onCompleted: {
-        Logger.i("AmneziaWG", "Bar widget loaded")
+        Logger.i("AmneziaWG-dkms", "Bar widget loaded")
     }
 
     NPopupContextMenu {

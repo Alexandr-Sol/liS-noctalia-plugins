@@ -193,6 +193,7 @@ Item {
 
                     // ZAPRET
                     NBox {
+                        visible: main?.hasZapret ?? false
                         Layout.fillWidth: true
                         implicitHeight: Math.round(zapretRow.implicitHeight + Style.marginXL)
                         color: Color.mSurface

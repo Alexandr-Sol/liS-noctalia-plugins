@@ -8,8 +8,8 @@
   },
   "toast": {
     "connected": "Подключено через {name}",
-    "disconnected": "AmneziaWG отключён",
-    "disconnectionError": "Не удалось отключить AmneziaWG",
+    "disconnected": "AmneziaWG-dkms отключён",
+    "disconnectionError": "Не удалось отключить AmneziaWG-dkms",
     "connectionError": "Ошибка подключения: {name}",
     "zapretStarted": "Zapret запущен",
     "zapretStopped": "Zapret остановлен",

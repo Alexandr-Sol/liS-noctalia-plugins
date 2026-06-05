@@ -1,0 +1,61 @@
+{
+  "panel": {
+    "profiles": "Профили",
+    "emptyTitle": "Профили не настроены",
+    "emptyDescription": "Добавьте профиль в настройках плагина",
+    "defaultProfile": "Профиль по умолчанию (ПКМ)",
+    "setDefault": "Назначить профилем по умолчанию (ПКМ)"
+  },
+  "toast": {
+    "connected": "Подключено через {name}",
+    "disconnected": "AmneziaWG-go отключён",
+    "disconnectionError": "Не удалось отключить AmneziaWG-go",
+    "connectionError": "Ошибка подключения: {name}",
+    "zapretStarted": "Zapret запущен",
+    "zapretStopped": "Zapret остановлен",
+    "zapretStartError": "Не удалось запустить Zapret",
+    "zapretStopError": "Не удалось остановить Zapret"
+  },
+  "zapret": {
+    "active": "Активен",
+    "inactive": "Остановлен",
+    "start": "Запустить",
+    "stop": "Остановить",
+    "dpiBypass": "Обход DPI"
+  },
+  "settings": {
+    "pluginSettings": "Настройки плагина",
+    "connectedColor": "Цвет при подключении",
+    "connectedColorDescription": "Цвет иконки и текста в подключённом состоянии",
+    "disconnectedColor": "Цвет при отключении",
+    "disconnectedColorDescription": "Цвет иконки и текста в отключённом состоянии",
+    "disableToastNotifications": "Отключить уведомления",
+    "disableToastNotificationsDescription": "Не показывать уведомления при подключении и отключении",
+    "barStyle": "Вид виджета в баре",
+    "barStyleDescription": "Как выглядит виджет в баре",
+    "barStyleIcon": "Круглая иконка",
+    "barStylePill": "Пилюля с надписью",
+    "quickToggle": "Быстрое переключение по ПКМ",
+    "quickToggleDescription": "ПКМ по иконке сразу подключает или отключает без открытия меню",
+    "autoStopZapret": "Выключать Zapret при подключении",
+    "autoStopZapretDescription": "Автоматически останавливать zapret.service при успешном подключении к VPN",
+    "profiles": "VPN-профили",
+    "noProfiles": "Профили не добавлены.",
+    "addProfile": "Добавить профиль",
+    "refreshProfiles": "Обновить профили",
+    "autoConfigInfo": "Конфигурации автоматически загружаются из /etc/amnezia/amneziawg/",
+    "profileNamePlaceholder": "Название профиля",
+    "profileConfigPlaceholder": "Путь к .conf файлу (напр. /etc/amneziawg/wg0.conf)"
+  },
+  "common": {
+    "connected": "Подключено",
+    "connecting": "Подключение…",
+    "disconnected": "Отключено",
+    "disconnecting": "Отключение…",
+    "connect": "Подключить",
+    "disconnect": "Отключить",
+    "close": "Закрыть",
+    "delete": "Удалить",
+    "cancel": "Отмена"
+  }
+}
