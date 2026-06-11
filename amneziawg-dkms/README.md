@@ -4,6 +4,10 @@
 
 ---
 
+![](../image1.png) ![](../image2.png)
+
+---
+
 This plugin allows managing AmneziaWG VPN connections using the kernel space DKMS implementation directly from **Noctalia**.
 
 ---

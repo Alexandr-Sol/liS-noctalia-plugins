@@ -4,6 +4,10 @@
 
 ---
 
+![](../image1.png) ![](../image2.png)
+
+---
+
 This plugin allows managing AmneziaWG VPN connections in **userspace** using the `amneziawg-go` implementation directly from **Noctalia**.
 
 ---
