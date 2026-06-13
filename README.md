@@ -16,3 +16,4 @@ https://github.com/Alexandr-Sol/liS-noctalia-plugins
 
 1. **[AmneziaWG-dkms](amneziawg-dkms)** - Connects to AmneziaWG VPN using the `awg-quick` CLI and the DKMS kernel module.
 2. **[AmneziaWG-go](amneziawg-go)** - Connects to AmneziaWG VPN in userspace via `amneziawg-go`.
+3. **[Agy Panel](agy-panel)** - Integrates the Antigravity CLI (via a local Python bridge script) as a sidebar chat panel.
