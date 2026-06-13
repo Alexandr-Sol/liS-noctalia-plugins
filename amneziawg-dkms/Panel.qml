@@ -44,7 +44,9 @@ Item {
 
         ColumnLayout {
             id: mainColumn
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.margins: Style.marginL
             spacing: Style.marginM
 
@@ -89,27 +91,16 @@ Item {
             }
 
             // CONTENT / SETTINGS SWITCHER
-            // Height is updated via ScriptAction at the invisible midpoint of each transition,
-            // avoiding the "flicker" that happens when implicitHeight is bound to an invisible
-            // ColumnLayout (which reports 0 when visible:false).
+            // Height uses declarative binding dependent on showSettingsHeight property,
+            // which is updated via ScriptAction at the invisible midpoint of each transition.
+            // This prevents binding destruction and avoids "flicker" while maintaining
+            // synchronous height updates when panel size changes.
             Item {
                 id: viewSwitcher
                 Layout.fillWidth: true
-                implicitHeight: mainPane.implicitHeight
-
-                // Keep height in sync when the active pane's content changes outside transitions
-                Connections {
-                    target: mainPane
-                    function onImplicitHeightChanged() {
-                        if (!root.showSettings) viewSwitcher.implicitHeight = mainPane.implicitHeight
-                    }
-                }
-                Connections {
-                    target: settingsPane
-                    function onImplicitHeightChanged() {
-                        if (root.showSettings) viewSwitcher.implicitHeight = settingsPane.implicitHeight
-                    }
-                }
+                
+                property bool showSettingsHeight: false
+                implicitHeight: showSettingsHeight ? settingsPane.implicitHeight : mainPane.implicitHeight
 
                 states: [
                     State { name: "main";     when: !root.showSettings },
@@ -122,8 +113,8 @@ Item {
                         SequentialAnimation {
                             // 1. Fade out main content
                             NumberAnimation { target: mainPane; property: "opacity"; to: 0; duration: 150; easing.type: Easing.InCubic }
-                            // 2. At the invisible midpoint: snap height and reset settings opacity
-                            ScriptAction { script: { viewSwitcher.implicitHeight = settingsPane.implicitHeight; settingsPane.opacity = 0 } }
+                            // 2. At the invisible midpoint: snap height via property and reset settings opacity
+                            ScriptAction { script: { viewSwitcher.showSettingsHeight = true; settingsPane.opacity = 0 } }
                             // 3. Fade in settings
                             NumberAnimation { target: settingsPane; property: "opacity"; to: 1; duration: 200; easing.type: Easing.OutCubic }
                         }
@@ -133,8 +124,8 @@ Item {
                         SequentialAnimation {
                             // 1. Fade out settings
                             NumberAnimation { target: settingsPane; property: "opacity"; to: 0; duration: 150; easing.type: Easing.InCubic }
-                            // 2. At the invisible midpoint: snap height and reset main opacity
-                            ScriptAction { script: { viewSwitcher.implicitHeight = mainPane.implicitHeight; mainPane.opacity = 0 } }
+                            // 2. At the invisible midpoint: snap height via property and reset main opacity
+                            ScriptAction { script: { viewSwitcher.showSettingsHeight = false; mainPane.opacity = 0 } }
                             // 3. Fade in main content
                             NumberAnimation { target: mainPane; property: "opacity"; to: 1; duration: 200; easing.type: Easing.OutCubic }
                         }
