@@ -21,6 +21,11 @@ function buildPerTurnCommand(settings, prompt, newSession, homeDir) {
     if (settings.dangerouslySkipPermissions) {
       args.push("--dangerously-skip-permissions");
     }
+
+    if (settings.model && settings.model.trim() !== "") {
+      args.push("--model");
+      args.push(settings.model);
+    }
   }
 
   return {
@@ -45,7 +50,7 @@ function parseSlashCommand(raw) {
   var cmd = parts[0].toLowerCase();
   var rest = parts.slice(1).join(" ");
 
-  var known = ["/help", "/clear", "/new", "/stop", "/cwd", "/copy"];
+  var known = ["/help", "/clear", "/new", "/stop", "/cwd", "/copy", "/changelog", "/model"];
   if (known.indexOf(cmd) === -1) { return { handled: false }; }
 
   return {

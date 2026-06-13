@@ -33,6 +33,8 @@ A Noctalia Shell plugin that integrates Antigravity CLI (via `agy-bridge`) as a 
 | `/stop` | Stop current generation |
 | `/copy` | Copy last assistant message |
 | `/cwd <path>` | Set working directory |
+| `/changelog` | Show agy changelog and release notes |
+| `/model [name]` | Select AI model or reset to default |
 
 ## IPC
 

@@ -30,6 +30,17 @@ Item {
   // ----- CLI health -----
   property bool binaryAvailable: false
   property bool binaryChecked: false
+  property string currentModel: "..."
+  property var availableModels: [
+    "Gemini 3.5 Flash (Medium)",
+    "Gemini 3.5 Flash (High)",
+    "Gemini 3.5 Flash (Low)",
+    "Gemini 3.1 Pro (Low)",
+    "Gemini 3.1 Pro (High)",
+    "Claude Sonnet 4.6 (Thinking)",
+    "Claude Opus 4.6 (Thinking)",
+    "GPT-OSS 120B (Medium)"
+  ]
   readonly property string pluginDir: {
     var url = Qt.resolvedUrl(".").toString();
     if (url.indexOf("file://") === 0) {
@@ -71,6 +82,8 @@ Item {
       root.binaryChecked = true;
       if (root.binaryAvailable) {
         Logger.i("AgyPanel", "Using local agy-bridge: " + root.resolvedBinaryPath);
+        root.updateCurrentModel();
+        root.updateAvailableModels();
       } else {
         Logger.w("AgyPanel", "Local agy-bridge at " + root.resolvedBinaryPath + " is not executable or not found.");
       }
@@ -80,6 +93,52 @@ Item {
   function checkBinary() {
     binaryChecked = false;
     checkLocalProcess.running = true;
+  }
+
+  Process {
+    id: modelCheckProcess
+    command: [root.resolvedBinaryPath || "agy-bridge", "--current-model"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        if (text && text.trim() !== "") {
+          root.currentModel = text.trim();
+        }
+      }
+    }
+  }
+
+  function updateCurrentModel() {
+    if (root.binaryAvailable) {
+      modelCheckProcess.running = true;
+    }
+  }
+
+  Process {
+    id: modelsListProcess
+    command: [root.resolvedBinaryPath || "agy-bridge", "--list-models"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        if (text && text.trim() !== "") {
+          var lines = text.trim().split("\n");
+          var cleaned = [];
+          for (var i = 0; i < lines.length; i++) {
+            var m = lines[i].trim();
+            if (m !== "") {
+              cleaned.push(m);
+            }
+          }
+          if (cleaned.length > 0) {
+            root.availableModels = cleaned;
+          }
+        }
+      }
+    }
+  }
+
+  function updateAvailableModels() {
+    if (root.binaryAvailable) {
+      modelsListProcess.running = true;
+    }
   }
 
   // ---------- State persistence ----------
@@ -373,6 +432,32 @@ Item {
     pasteProcess.running = true;
   }
 
+  Process {
+    id: changelogProcess
+    command: ["agy", "changelog"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        if (text && text.trim() !== "") {
+          pushMessage({
+            role: "assistant",
+            kind: "text",
+            text: text.trim()
+          });
+        } else {
+          pushMessage({
+            role: "assistant",
+            kind: "text",
+            text: pluginApi?.tr("changelog.empty") || "История версий пуста или agy недоступен."
+          });
+        }
+      }
+    }
+  }
+
+  function showChangelog() {
+    changelogProcess.running = true;
+  }
+
   // Continue interactive CLI in default terminal
   function openTerminal() {
     var term = agySettings.terminalEmulator || "ghostty";
@@ -381,6 +466,11 @@ Item {
 
     if (agySettings.sandbox) {
       args.unshift("--sandbox");
+    }
+
+    if (agySettings.model && agySettings.model.trim() !== "") {
+      args.push("--model");
+      args.push(agySettings.model);
     }
     
     var home = Quickshell.env("HOME") || "";
@@ -421,7 +511,9 @@ Item {
             pluginApi?.tr("help.newCmd") || "- `/new` — начать новую сессию Agy",
             pluginApi?.tr("help.stopCmd") || "- `/stop` — остановить текущее выполнение",
             pluginApi?.tr("help.cwdCmd") || "- `/cwd <абсолютный-путь>` — установить рабочую директорию",
-            pluginApi?.tr("help.copyCmd") || "- `/copy` — скопировать последнее сообщение ассистента"
+            pluginApi?.tr("help.copyCmd") || "- `/copy` — скопировать последнее сообщение ассистента",
+            pluginApi?.tr("help.changelogCmd") || "- `/changelog` — показать историю изменений (changelog)",
+            pluginApi?.tr("help.modelCmd") || "- `/model [имя]` — выбрать модель ИИ или сбросить"
           ].join("\n")
         });
         return true;
@@ -459,6 +551,40 @@ Item {
           }
         }
         showNotice(pluginApi?.tr("toast.noAssistantMessageToCopy") || "Нет сообщений ассистента для копирования");
+        return true;
+
+      case "/changelog":
+        showChangelog();
+        return true;
+
+      case "/model":
+        var targetModel = rest ? rest.trim() : "";
+        if (targetModel === "") {
+          var activeModel = agySettings.model || root.currentModel || "Gemini 3.5 Flash (High)";
+          pushMessage({
+            role: "assistant",
+            kind: "text",
+            text: (pluginApi?.tr("model.current") || "Текущая модель: ") + "`" + activeModel + "`"
+          });
+        } else {
+          if (targetModel.toLowerCase() === "default" || targetModel.toLowerCase() === "reset") {
+            setAgyField("model", "");
+            root.updateCurrentModel();
+            pushMessage({
+              role: "assistant",
+              kind: "text",
+              text: pluginApi?.tr("model.reset") || "Сброшено на модель по умолчанию."
+            });
+          } else {
+            setAgyField("model", targetModel);
+            root.currentModel = targetModel;
+            pushMessage({
+              role: "assistant",
+              kind: "text",
+              text: (pluginApi?.tr("model.updated") || "Модель изменена на: ") + "`" + targetModel + "`"
+            });
+          }
+        }
         return true;
 
       default:

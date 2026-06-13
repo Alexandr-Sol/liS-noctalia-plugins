@@ -72,6 +72,44 @@ def get_latest_conversation_id():
         pass
     print("")
 
+def get_current_model():
+    settings_path = os.path.expanduser("~/.gemini/antigravity-cli/settings.json")
+    if not os.path.exists(settings_path):
+        print("Gemini 3.5 Flash (High)")
+        return
+    try:
+        with open(settings_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            model = data.get("model", "Gemini 3.5 Flash (High)")
+            print(str(model).strip())
+    except Exception:
+        print("Gemini 3.5 Flash (High)")
+
+def list_models():
+    try:
+        out = subprocess.check_output(["agy", "models"], text=True)
+        lines = []
+        for line in out.replace('\r', '\n').split('\n'):
+            line = line.strip()
+            if not line or "Fetching" in line:
+                continue
+            lines.append(line)
+        for model in lines:
+            print(model)
+    except Exception:
+        fallback_models = [
+            "Gemini 3.5 Flash (Medium)",
+            "Gemini 3.5 Flash (High)",
+            "Gemini 3.5 Flash (Low)",
+            "Gemini 3.1 Pro (Low)",
+            "Gemini 3.1 Pro (High)",
+            "Claude Sonnet 4.6 (Thinking)",
+            "Claude Opus 4.6 (Thinking)",
+            "GPT-OSS 120B (Medium)"
+        ]
+        for model in fallback_models:
+            print(model)
+
 def list_conversations():
     history_path = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
     if not os.path.exists(history_path):
@@ -137,7 +175,7 @@ class StreamFilter:
             self.buffer = ""
             return out
 
-def run_agy_prompt(prompt, conversation_id=None, new_session=False, sandbox=False, dangerously_skip_permissions=False):
+def run_agy_prompt(prompt, conversation_id=None, new_session=False, sandbox=False, dangerously_skip_permissions=False, model=None):
     """
     Executes a single agy prompt, streaming the response to stdout in real-time.
     """
@@ -159,6 +197,8 @@ def run_agy_prompt(prompt, conversation_id=None, new_session=False, sandbox=Fals
         cmd.append("--sandbox")
     if dangerously_skip_permissions:
         cmd.append("--dangerously-skip-permissions")
+    if model:
+        cmd.extend(["--model", model])
         
     # Run in print mode to get output non-interactively
     cmd.extend(["--print", prompt])
@@ -247,6 +287,9 @@ if __name__ == "__main__":
     parser.add_argument("--list", action="store_true", help="List all saved conversations as JSON")
     parser.add_argument("--latest-id", action="store_true", help="Print the latest conversation ID")
     parser.add_argument("--paste", action="store_true", help="Paste clipboard image/text")
+    parser.add_argument("--current-model", action="store_true", help="Print the active model name from settings")
+    parser.add_argument("--list-models", action="store_true", help="Print the clean list of supported models")
+    parser.add_argument("--model", type=str, help="Model name to override default model")
     
     args = parser.parse_args()
     
@@ -254,6 +297,10 @@ if __name__ == "__main__":
         handle_paste()
     elif args.latest_id:
         get_latest_conversation_id()
+    elif args.current_model:
+        get_current_model()
+    elif args.list_models:
+        list_models()
     elif args.list:
         list_conversations()
     elif args.interactive:
@@ -264,7 +311,8 @@ if __name__ == "__main__":
             conversation_id=args.conversation,
             new_session=args.new,
             sandbox=args.sandbox,
-            dangerously_skip_permissions=args.dangerously_skip_permissions
+            dangerously_skip_permissions=args.dangerously_skip_permissions,
+            model=args.model
         )
     else:
         parser.print_help()

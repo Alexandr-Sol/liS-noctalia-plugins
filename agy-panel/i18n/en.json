@@ -101,6 +101,26 @@
     "newCmd": "- `/new` — start new Agy session",
     "stopCmd": "- `/stop` — stop current run",
     "cwdCmd": "- `/cwd <absolute-path>` — set working directory",
-    "copyCmd": "- `/copy` — copy latest assistant message"
+    "copyCmd": "- `/copy` — copy latest assistant message",
+    "changelogCmd": "- `/changelog` — show changelog and release notes",
+    "modelCmd": "- `/model [name]` — select AI model or reset to default",
+    "descHelp": "Show list of local commands",
+    "descClear": "Clear local chat history",
+    "descNew": "Start new Antigravity session",
+    "descStop": "Stop current generation",
+    "descCwd": "Show or set working directory",
+    "descCopy": "Copy last assistant response",
+    "descChangelog": "Show agy changelog and release notes",
+    "descModel": "Select AI model or show the active one"
+  },
+  "changelog": {
+    "empty": "Changelog is empty or agy is not available."
+  },
+  "model": {
+    "descDefault": "Reset to default model",
+    "descSelect": "Select model ",
+    "current": "Active model: ",
+    "reset": "Reset to default model.",
+    "updated": "Model switched to: "
   }
 }

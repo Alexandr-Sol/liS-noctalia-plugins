@@ -227,6 +227,165 @@ Item {
         }
 
         // ═══════════════════════════════════════════
+        // Slash commands preview list
+        // ═══════════════════════════════════════════
+        Rectangle {
+            id: slashPreviewContainer
+            Layout.fillWidth: true
+            color: Color.mSurface
+            radius: Style.radiusM
+            border.color: Color.mPrimary
+            border.width: 1
+            clip: true
+            
+            property int activeCommandIndex: 0
+            
+            onFilteredModelChanged: {
+                activeCommandIndex = 0;
+            }
+            
+            function selectNext() {
+                if (filteredModel.length === 0) return;
+                activeCommandIndex = (activeCommandIndex + 1) % filteredModel.length;
+            }
+            
+            function selectPrev() {
+                if (filteredModel.length === 0) return;
+                activeCommandIndex = (activeCommandIndex - 1 + filteredModel.length) % filteredModel.length;
+            }
+            
+            function autocompleteActive() {
+                if (filteredModel.length === 0 || activeCommandIndex < 0 || activeCommandIndex >= filteredModel.length) return;
+                var cmd = filteredModel[activeCommandIndex];
+                inputTextArea.text = cmd.name + " ";
+                inputTextArea.cursorPosition = inputTextArea.text.length;
+                inputTextArea.forceActiveFocus();
+            }
+            
+            readonly property string currentText: inputTextArea.text
+            readonly property bool shouldShow: currentText.startsWith("/") && filteredModel.length > 0
+            
+            Layout.preferredHeight: shouldShow ? Math.min(220 * Style.uiScaleRatio, commandsLayout.implicitHeight + Style.marginS * 2) : 0
+            visible: Layout.preferredHeight > 0
+            
+            Behavior on Layout.preferredHeight {
+                NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+            }
+            
+            readonly property var allCommands: [
+                { name: "/help", desc: pluginApi?.tr("help.descHelp") || "Показать список локальных команд" },
+                { name: "/clear", desc: pluginApi?.tr("help.descClear") || "Очистить локальную историю чата" },
+                { name: "/new", desc: pluginApi?.tr("help.descNew") || "Начать новую сессию Antigravity" },
+                { name: "/stop", desc: pluginApi?.tr("help.descStop") || "Прервать текущую генерацию ответа" },
+                { name: "/cwd", desc: pluginApi?.tr("help.descCwd") || "Показать или установить рабочую директорию" },
+                { name: "/copy", desc: pluginApi?.tr("help.descCopy") || "Скопировать последний ответ ассистента" },
+                { name: "/changelog", desc: pluginApi?.tr("help.descChangelog") || "Показать историю изменений (changelog)" },
+                { name: "/model", desc: pluginApi?.tr("help.descModel") || "Выбрать модель искусственного интеллекта" }
+            ]
+            
+            readonly property var filteredModel: {
+                if (!currentText.startsWith("/")) return [];
+                
+                if (currentText.startsWith("/model ") || currentText === "/model") {
+                    var modelQuery = "";
+                    if (currentText.startsWith("/model ")) {
+                        modelQuery = currentText.substring(7).toLowerCase().trim();
+                    }
+                    
+                    var models = ["default"];
+                    if (mainInstance && mainInstance.availableModels) {
+                        models = models.concat(mainInstance.availableModels);
+                    }
+                    
+                    var modelItems = [];
+                    for (var i = 0; i < models.length; i++) {
+                        var m = models[i];
+                        if (modelQuery === "" || m.toLowerCase().indexOf(modelQuery) !== -1) {
+                            var descText = (m === "default") 
+                                ? (pluginApi?.tr("model.descDefault") || "Сбросить на модель по умолчанию") 
+                                : ((pluginApi?.tr("model.descSelect") || "Выбрать модель ") + m);
+                            modelItems.push({
+                                name: "/model " + m,
+                                desc: descText
+                            });
+                        }
+                    }
+                    if (modelItems.length > 0) {
+                        return modelItems;
+                    }
+                }
+                
+                var query = currentText.toLowerCase().trim();
+                if (query === "/") return allCommands;
+                
+                return allCommands.filter(function(cmd) {
+                    return cmd.name.indexOf(query) === 0;
+                });
+            }
+            
+            ScrollView {
+                anchors.fill: parent
+                anchors.margins: Style.marginS
+                clip: true
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                
+                ColumnLayout {
+                    id: commandsLayout
+                    width: parent.width - Style.marginS * 2
+                    spacing: 2
+                    
+                    Repeater {
+                        model: slashPreviewContainer.filteredModel
+                        delegate: Rectangle {
+                            id: cmdRow
+                            Layout.fillWidth: true
+                            implicitHeight: 36 * Style.uiScaleRatio
+                            color: (mouseArea.containsMouse || slashPreviewContainer.activeCommandIndex === index) ? Qt.alpha(Color.mPrimary, 0.12) : "transparent"
+                            radius: Style.radiusS
+                            
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: Style.marginS
+                                anchors.rightMargin: Style.marginS
+                                spacing: Style.marginM
+                                
+                                NText {
+                                    text: modelData.name
+                                    font.weight: Font.Bold
+                                    color: Color.mPrimary
+                                    pointSize: Style.fontSizeM
+                                }
+                                
+                                NText {
+                                    text: modelData.desc
+                                    color: Color.mOnSurfaceVariant
+                                    pointSize: Style.fontSizeS
+                                    Layout.fillWidth: true
+                                    elide: Text.ElideRight
+                                    opacity: 0.8
+                                }
+                            }
+                            
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onEntered: {
+                                    slashPreviewContainer.activeCommandIndex = index;
+                                }
+                                onClicked: {
+                                    slashPreviewContainer.activeCommandIndex = index;
+                                    slashPreviewContainer.autocompleteActive();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════
         // Input area
         // ═══════════════════════════════════════════
         Rectangle {
@@ -357,6 +516,32 @@ Item {
                         }
 
                         Keys.onPressed: function(event) {
+                            if (slashPreviewContainer.shouldShow) {
+                                if (event.key === Qt.Key_Up) {
+                                    slashPreviewContainer.selectPrev();
+                                    event.accepted = true;
+                                    return;
+                                } else if (event.key === Qt.Key_Down) {
+                                    slashPreviewContainer.selectNext();
+                                    event.accepted = true;
+                                    return;
+                                } else if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+                                    if (!(event.modifiers & Qt.ShiftModifier)) {
+                                        var activeCmd = slashPreviewContainer.filteredModel[slashPreviewContainer.activeCommandIndex];
+                                        if (activeCmd) {
+                                            var activeCmdName = activeCmd.name;
+                                            var currentTrimmed = inputTextArea.text.trim();
+                                            if (currentTrimmed !== activeCmdName) {
+                                                // Command is incomplete, autocomplete it
+                                                slashPreviewContainer.autocompleteActive();
+                                                event.accepted = true;
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
                                 if (event.modifiers & Qt.ShiftModifier) {
                                     insert(cursorPosition, "\n");
@@ -378,6 +563,16 @@ Item {
                 RowLayout {
                     width: parent.width
                     spacing: Style.marginXS
+
+                    // Active model display
+                    NText {
+                        text: mainInstance && mainInstance.currentModel ? mainInstance.currentModel : "..."
+                        pointSize: Style.fontSizeXS
+                        color: Color.mOnSurfaceVariant
+                        opacity: 0.6
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.rightMargin: Style.marginS
+                    }
 
                     // Status Chips for Sandbox and Auto-Approve
                     Rectangle {
