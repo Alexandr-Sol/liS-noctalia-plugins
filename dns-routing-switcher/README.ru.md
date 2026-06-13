@@ -38,3 +38,27 @@
    ```bash
    systemctl restart systemd-resolved
    ```
+
+## Настройка Polkit (выполнение без пароля)
+
+Чтобы плагин мог применять настройки DNS без постоянного запроса пароля администратора через `pkexec`, вы можете создать правило Polkit.
+
+Создайте файл `/etc/polkit-1/rules.d/10-noctalia-plugins.rules` со следующим содержимым:
+
+```javascript
+/* Разрешить выполнение системных команд для плагинов Noctalia без пароля для группы wheel */
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        subject.isInGroup("wheel")) {
+        var program = action.lookup("program");
+        if (program == "/usr/bin/ls" ||
+            program == "/usr/bin/awg-quick" ||
+            program == "/usr/bin/env" ||
+            program == "/usr/bin/sh") {
+            return polkit.Result.YES;
+        }
+    }
+});
+```
+
+Убедитесь, что владельцем файла является `root:root`, а права доступа установлены в `0644`.

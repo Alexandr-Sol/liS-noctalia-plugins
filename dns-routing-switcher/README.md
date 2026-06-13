@@ -38,3 +38,27 @@ Under the hood, the plugin runs the following operations:
    ```bash
    systemctl restart systemd-resolved
    ```
+
+## Polkit Configuration (execution without password)
+
+To allow the plugin to apply DNS settings without constantly prompting for the administrator password via `pkexec`, you can create a Polkit rule.
+
+Create the file `/etc/polkit-1/rules.d/10-noctalia-plugins.rules` with the following content:
+
+```javascript
+/* Allow system commands for Noctalia plugins without password for the wheel group */
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        subject.isInGroup("wheel")) {
+        var program = action.lookup("program");
+        if (program == "/usr/bin/ls" ||
+            program == "/usr/bin/awg-quick" ||
+            program == "/usr/bin/env" ||
+            program == "/usr/bin/sh") {
+            return polkit.Result.YES;
+        }
+    }
+});
+```
+
+Ensure the file is owned by `root:root` and the permissions are set to `0644`.
