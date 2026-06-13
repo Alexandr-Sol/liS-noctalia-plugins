@@ -1,0 +1,106 @@
+{
+  "widget": {
+    "tooltipTitle": "Agy",
+    "notInstalled": "`agy-bridge` не найден в PATH",
+    "mode": "Режим",
+    "session": "Сессия",
+    "messages": "Сообщений",
+    "running": "Работает…",
+    "rightClickHint": "Правая кнопка — опции"
+  },
+  "ccw": {
+    "tooltip": "Agy"
+  },
+  "menu": {
+    "openPanel": "Открыть панель",
+    "newSession": "Новая сессия",
+    "stop": "Остановить",
+    "clearHistory": "Очистить историю",
+    "settings": "Настройки"
+  },
+  "panel": {
+    "title": "Agy",
+    "inputPlaceholder": "Спросите Antigravity...",
+    "send": "Отправить",
+    "stop": "Стоп",
+    "newSession": "Новая",
+    "newChat": "Новый чат",
+    "newChatAtPath": "Новый чат по пути",
+    "openInTerminal": "Продолжить в терминале",
+    "cwdValue": "cwd: {path}",
+    "sessionIdValue": "Сессия: {id}",
+    "noSession": "Новая сессия",
+    "sessionActive": "Сессия активна",
+    "messages": "сообщений",
+    "emptyTitle": "Antigravity",
+    "emptyHint": "Введите сообщение, чтобы начать",
+    "scrollToBottom": "Прокрутить вниз",
+    "roleUser": "Вы",
+    "toolUse": "Инструмент",
+    "toolResult": "Результат",
+    "jumpToLatest": "К последнему",
+    "emptyHintNonInteractive": "Введите запрос для запуска в неинтерактивном режиме",
+    "imagesAttachedCount": "Изображения прикреплены",
+    "imageAttached": "Изображение прикреплено",
+    "inputPlaceholderCombined": "Спросите Antigravity... (Enter для отправки, Shift+Enter для новой строки)",
+    "sandboxLabel": "Песочница",
+    "autoApproveLabel": "Авто-одобрение",
+    "executingRequest": "Выполнение запроса...",
+    "errorLabel": "Ошибка"
+  },
+  "settings": {
+    "workingDir": "Рабочая директория",
+    "workingDirHelp": "Абсолютный путь. Agy будет работать в этой папке.",
+    "sandbox": "Запускать в sandbox (--sandbox)",
+    "sandboxHelp": "Ограничивает выполнение для безопасности.",
+    "terminalEmulator": "Эмулятор терминала",
+    "terminalEmulatorHelp": "Выберите терминал для продолжения сессии",
+    "title": "Настройки Antigravity",
+    "binaryPath": "Путь к agy-bridge",
+    "binaryPathHelp": "Имя в PATH или абсолютный путь к скрипту моста",
+    "dangerouslySkipPermissions": "Авто-подтверждение (--dangerously-skip-permissions)",
+    "dangerouslySkipPermissionsHelp": "Разрешить agy выполнять любые инструменты автоматически (ОПАСНО)",
+    "defaultPrompt": "Промпт по умолчанию",
+    "defaultPromptHelp": "Этот системный промпт будет незаметно прикрепляться к первому сообщению каждого нового чата",
+    "defaultPromptPlaceholder": "Например: Отвечай коротко и только на русском языке...",
+    "widgetTitle": "Настройки виджета",
+    "widgetStyle": "Стиль виджета",
+    "widgetStyleHelp": "Выберите отображение виджета в панели",
+    "widgetStyleCompact": "Компактный (только иконка)",
+    "widgetStyleLarge": "Крупный (иконка + текст)",
+    "panelHeightRatio": "Высота панели",
+    "panelHeightRatioHelp": "Какую часть высоты экрана должна занимать панель",
+    "panelWidth": "Ширина панели",
+    "panelWidthHelp": "Ширина панели в пикселях",
+    "enableNotifications": "Включить уведомления",
+    "enableNotificationsHelp": "Показывать всплывающие уведомления при копировании, очистке истории и т. д."
+  },
+  "toast": {
+    "sessionCleared": "Сессия Antigravity сброшена",
+    "historyCleared": "История чата очищена",
+    "stopped": "Остановлено",
+    "copied": "Скопировано",
+    "newSessionStarted": "Новая сессия Agy начата",
+    "noAssistantMessageToCopy": "Нет сообщений ассистента для копирования"
+  },
+  "errors": {
+    "binaryMissing": "`agy-bridge` не найден. Убедитесь, что скрипт установлен.",
+    "runFailed": "Ошибка запуска Agy",
+    "noInput": "Введите сообщение",
+    "busy": "Agy еще работает. Сначала остановите."
+  },
+  "cwd": {
+    "current": "Текущая cwd: ",
+    "default": "по умолчанию",
+    "updated": "Рабочая директория установлена: "
+  },
+  "help": {
+    "title": "**Локальные команды**",
+    "helpCmd": "- `/help` — этот список",
+    "clearCmd": "- `/clear` — очистить историю чата",
+    "newCmd": "- `/new` — начать новую сессию Agy",
+    "stopCmd": "- `/stop` — остановить текущее выполнение",
+    "cwdCmd": "- `/cwd <абсолютный-путь>` — установить рабочую директорию",
+    "copyCmd": "- `/copy` — скопировать последнее сообщение ассистента"
+  }
+}

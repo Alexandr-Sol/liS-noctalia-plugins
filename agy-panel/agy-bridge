@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+import argparse
+import os
+import json
+import tempfile
+import time
+
+def handle_paste():
+    # Check if Wayland or X11 is used
+    wayland = os.environ.get("WAYLAND_DISPLAY") is not None
+    
+    # Try to save clipboard image
+    image_saved = False
+    temp_path = os.path.join(tempfile.gettempdir(), f"agy_paste_{int(time.time())}.png")
+    
+    if wayland:
+        try:
+            # Check if image/png is in list-types
+            types = subprocess.check_output(["wl-paste", "--list-types"], text=True).splitlines()
+            if any("image/" in t for t in types):
+                # Save image
+                with open(temp_path, "wb") as f:
+                    subprocess.run(["wl-paste", "--type", "image/png"], stdout=f, check=True)
+                image_saved = True
+        except Exception:
+            pass
+    else:
+        # X11
+        try:
+            # Check target types
+            targets = subprocess.check_output(["xclip", "-selection", "clipboard", "-o", "-t", "TARGETS"], text=True).splitlines()
+            if any("image/" in t or "PNG" in t for t in targets):
+                with open(temp_path, "wb") as f:
+                    subprocess.run(["xclip", "-selection", "clipboard", "-t", "image/png", "-o"], stdout=f, check=True)
+                image_saved = True
+        except Exception:
+            pass
+            
+    if image_saved:
+        # Output the path of the saved image
+        print(temp_path)
+    else:
+        # Otherwise, output clipboard text
+        try:
+            if wayland:
+                text = subprocess.check_output(["wl-paste", "--type", "text/plain"], text=True)
+            else:
+                text = subprocess.check_output(["xclip", "-selection", "clipboard", "-o"], text=True)
+            print(text, end="")
+        except Exception:
+            pass
+
+def get_latest_conversation_id():
+    history_path = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    if not os.path.exists(history_path):
+        print("")
+        return
+    try:
+        with open(history_path, "r") as f:
+            for line in reversed(list(f)):
+                try:
+                    data = json.loads(line.strip())
+                    cid = data.get("conversationId")
+                    if cid:
+                        print(cid)
+                        return
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    print("")
+
+def list_conversations():
+    history_path = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    if not os.path.exists(history_path):
+        print("[]")
+        return
+        
+    convs = {}
+    with open(history_path, "r") as f:
+        for line in f:
+            try:
+                data = json.loads(line.strip())
+                cid = data.get("conversationId")
+                display = data.get("display")
+                ts = data.get("timestamp", 0)
+                if cid and display:
+                    # Keep the first prompt as the conversation name
+                    if cid not in convs:
+                        convs[cid] = {"id": cid, "name": display, "timestamp": ts}
+                    else:
+                        convs[cid]["timestamp"] = max(convs[cid]["timestamp"], ts)
+            except Exception:
+                pass
+                
+    # Sort by latest activity timestamp
+    sorted_convs = sorted(convs.values(), key=lambda x: x["timestamp"], reverse=True)
+    # Output as JSON
+    print(json.dumps(sorted_convs, ensure_ascii=False))
+
+class StreamFilter:
+    def __init__(self, past_texts):
+        self.past_targets = []
+        for text in past_texts:
+            if text:
+                non_ws = [c for c in text if not c.isspace()]
+                if non_ws:
+                    self.past_targets.append(non_ws)
+        
+        self.target_idx = 0
+        self.char_idx = 0
+        self.buffer = ""
+        self.mismatch = False
+
+    def feed(self, char):
+        if self.mismatch or self.target_idx >= len(self.past_targets):
+            return char
+
+        self.buffer += char
+
+        if char.isspace():
+            return ""
+
+        target = self.past_targets[self.target_idx]
+        if char == target[self.char_idx]:
+            self.char_idx += 1
+            if self.char_idx == len(target):
+                self.buffer = ""
+                self.char_idx = 0
+                self.target_idx += 1
+            return ""
+        else:
+            self.mismatch = True
+            out = self.buffer
+            self.buffer = ""
+            return out
+
+def run_agy_prompt(prompt, conversation_id=None, new_session=False, sandbox=False, dangerously_skip_permissions=False):
+    """
+    Executes a single agy prompt, streaming the response to stdout in real-time.
+    """
+    # Base command
+    cmd = ["agy"]
+    
+    # Session handling
+    if conversation_id:
+        cmd.extend(["--conversation", conversation_id])
+    elif new_session:
+        # Do not add --continue, which will start a new conversation
+        pass
+    else:
+        # Default to continuing the most recent conversation
+        cmd.append("--continue")
+        
+    # Sandbox and permissions flags
+    if sandbox:
+        cmd.append("--sandbox")
+    if dangerously_skip_permissions:
+        cmd.append("--dangerously-skip-permissions")
+        
+    # Run in print mode to get output non-interactively
+    cmd.extend(["--print", prompt])
+    
+    print(f"[*] Executing command: {' '.join(cmd)}", file=sys.stderr)
+    
+    # Spawn the process
+    process = subprocess.Popen(
+        cmd,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=sys.stderr,
+        text=True,
+        bufsize=1
+    )
+    
+    # Load past assistant messages to filter them out from the stream
+    past_texts = []
+    # If starting a new session, we don't need to filter anything
+    if not new_session:
+        state_path = os.path.expanduser("~/.cache/noctalia/plugins/agy-panel/state.json")
+        if os.path.exists(state_path):
+            try:
+                with open(state_path, "r", encoding="utf-8") as f:
+                    state_data = json.load(f)
+                    messages = state_data.get("messages", [])
+                    for m in messages:
+                        if m.get("role") == "assistant" and m.get("text"):
+                            past_texts.append(m["text"])
+            except Exception as e:
+                print(f"[*] Error reading state: {e}", file=sys.stderr)
+
+    stream_filter = StreamFilter(past_texts)
+    
+    # Read stdout character by character and stream it
+    try:
+        while True:
+            char = process.stdout.read(1)
+            if not char:
+                break
+            out = stream_filter.feed(char)
+            if out:
+                sys.stdout.write(out)
+                sys.stdout.flush()
+    except KeyboardInterrupt:
+        print("\n[!] Execution interrupted by user. Terminating process...", file=sys.stderr)
+        process.terminate()
+        process.wait()
+        return
+        
+    process.wait()
+    
+    if process.returncode != 0:
+        print(f"\n[!] agy exited with code {process.returncode}", file=sys.stderr)
+
+def interactive_chat():
+    """
+    Starts an interactive loop in the terminal wrapping agy --continue.
+    """
+    print("=== Antigravity CLI Python Bridge ===", file=sys.stderr)
+    print("Type your message and press Enter. Type 'exit' or 'quit' to stop.\n", file=sys.stderr)
+    
+    while True:
+        try:
+            prompt = input("You > ").strip()
+            if not prompt:
+                continue
+            if prompt.lower() in ("exit", "quit"):
+                break
+                
+            print("AI > ", end="", flush=True)
+            run_agy_prompt(prompt)
+            print("\n")
+        except (KeyboardInterrupt, EOFError):
+            print("\nExiting...", file=sys.stderr)
+            break
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Python Bridge for Antigravity (agy) CLI")
+    parser.add_argument("-p", "--prompt", type=str, help="Run a single prompt and print the streamed response")
+    parser.add_argument("-i", "--interactive", action="store_true", help="Start an interactive chat session")
+    parser.add_argument("--conversation", type=str, help="Specific conversation ID to resume")
+    parser.add_argument("--new", action="store_true", help="Start a new conversation session explicitly")
+    parser.add_argument("--sandbox", action="store_true", help="Run agy in sandbox mode")
+    parser.add_argument("--dangerously-skip-permissions", action="store_true", help="Auto-approve all permissions")
+    parser.add_argument("--list", action="store_true", help="List all saved conversations as JSON")
+    parser.add_argument("--latest-id", action="store_true", help="Print the latest conversation ID")
+    parser.add_argument("--paste", action="store_true", help="Paste clipboard image/text")
+    
+    args = parser.parse_args()
+    
+    if args.paste:
+        handle_paste()
+    elif args.latest_id:
+        get_latest_conversation_id()
+    elif args.list:
+        list_conversations()
+    elif args.interactive:
+        interactive_chat()
+    elif args.prompt:
+        run_agy_prompt(
+            args.prompt, 
+            conversation_id=args.conversation,
+            new_session=args.new,
+            sandbox=args.sandbox,
+            dangerously_skip_permissions=args.dangerously_skip_permissions
+        )
+    else:
+        parser.print_help()

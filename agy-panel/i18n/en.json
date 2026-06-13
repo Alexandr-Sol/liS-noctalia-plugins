@@ -1,0 +1,106 @@
+{
+  "widget": {
+    "tooltipTitle": "Agy",
+    "notInstalled": "`agy-bridge` not found on PATH",
+    "mode": "Mode",
+    "session": "Session",
+    "messages": "Messages",
+    "running": "Running…",
+    "rightClickHint": "Right-click for options"
+  },
+  "ccw": {
+    "tooltip": "Agy"
+  },
+  "menu": {
+    "openPanel": "Open panel",
+    "newSession": "New session",
+    "stop": "Stop current run",
+    "clearHistory": "Clear chat history",
+    "settings": "Settings"
+  },
+  "panel": {
+    "title": "Agy",
+    "inputPlaceholder": "Ask Antigravity…",
+    "send": "Send",
+    "stop": "Stop",
+    "newSession": "New",
+    "newChat": "New Chat",
+    "newChatAtPath": "New Chat in path",
+    "openInTerminal": "Continue in terminal",
+    "cwdValue": "cwd: {path}",
+    "sessionIdValue": "Session: {id}",
+    "noSession": "New session",
+    "sessionActive": "Session active",
+    "messages": "messages",
+    "emptyTitle": "Antigravity",
+    "emptyHint": "Type a message to start",
+    "scrollToBottom": "Scroll down",
+    "roleUser": "You",
+    "toolUse": "Tool",
+    "toolResult": "Result",
+    "jumpToLatest": "Jump to latest",
+    "emptyHintNonInteractive": "Enter a prompt to run in non-interactive mode",
+    "imagesAttachedCount": "Images attached",
+    "imageAttached": "Image attached",
+    "inputPlaceholderCombined": "Ask Antigravity... (Enter to send, Shift+Enter for newline)",
+    "sandboxLabel": "Sandbox",
+    "autoApproveLabel": "Auto-approve",
+    "executingRequest": "Executing request...",
+    "errorLabel": "Error"
+  },
+  "settings": {
+    "workingDir": "Working directory",
+    "workingDirHelp": "Absolute path. Agy will operate in this directory.",
+    "sandbox": "Run in sandbox (--sandbox)",
+    "sandboxHelp": "Restricts Agy to a sandboxed environment for safer execution.",
+    "terminalEmulator": "Terminal Emulator",
+    "terminalEmulatorHelp": "Select terminal emulator for continuing the session",
+    "title": "Antigravity Settings",
+    "binaryPath": "Path to agy-bridge",
+    "binaryPathHelp": "Name in PATH or absolute path to the bridge script",
+    "dangerouslySkipPermissions": "Auto-confirm (--dangerously-skip-permissions)",
+    "dangerouslySkipPermissionsHelp": "Allow agy to run any tools automatically (DANGEROUS)",
+    "defaultPrompt": "Default Prompt",
+    "defaultPromptHelp": "This system prompt will be silently attached to the first message of each new chat",
+    "defaultPromptPlaceholder": "e.g. Respond concisely and only in English...",
+    "widgetTitle": "Widget Settings",
+    "widgetStyle": "Widget Style",
+    "widgetStyleHelp": "Select widget representation in the panel",
+    "widgetStyleCompact": "Compact (icon only)",
+    "widgetStyleLarge": "Large (icon + text)",
+    "panelHeightRatio": "Panel Height",
+    "panelHeightRatioHelp": "How much of the screen height the panel should use",
+    "panelWidth": "Panel Width",
+    "panelWidthHelp": "Width of the panel in pixels",
+    "enableNotifications": "Enable Notifications",
+    "enableNotificationsHelp": "Show popup notifications for actions like copying to clipboard, clearing history, etc."
+  },
+  "toast": {
+    "sessionCleared": "Antigravity session cleared",
+    "historyCleared": "Chat history cleared",
+    "stopped": "Run stopped",
+    "copied": "Copied to clipboard",
+    "newSessionStarted": "New Agy session started",
+    "noAssistantMessageToCopy": "No assistant message to copy"
+  },
+  "errors": {
+    "binaryMissing": "`agy-bridge` not found. Please check settings.",
+    "runFailed": "Agy run failed",
+    "noInput": "Please type a message first",
+    "busy": "Agy is still working. Stop it first."
+  },
+  "cwd": {
+    "current": "Current cwd: ",
+    "default": "default",
+    "updated": "Working directory set to: "
+  },
+  "help": {
+    "title": "**Local Commands**",
+    "helpCmd": "- `/help` — this list",
+    "clearCmd": "- `/clear` — clear chat history",
+    "newCmd": "- `/new` — start new Agy session",
+    "stopCmd": "- `/stop` — stop current run",
+    "cwdCmd": "- `/cwd <absolute-path>` — set working directory",
+    "copyCmd": "- `/copy` — copy latest assistant message"
+  }
+}

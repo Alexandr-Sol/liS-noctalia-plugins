@@ -1,0 +1,20 @@
+{
+  "maxHistoryLength": 200,
+  "panelDetached": true,
+  "panelPosition": "right",
+  "panelHeightRatio": 0.6,
+  "panelWidth": 900,
+  "attachmentStyle": "connected",
+  "agy": {
+    "binary": "agy-bridge",
+    "workingDir": "",
+    "sandbox": false,
+    "dangerouslySkipPermissions": false,
+    "terminalEmulator": "ghostty",
+    "defaultPrompt": "отвечай на русском",
+    "enableNotifications": false
+  },
+  "widget": {
+    "style": "large"
+  }
+}

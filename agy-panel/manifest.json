@@ -1,0 +1,49 @@
+{
+  "id": "agy-panel",
+  "name": "Agy Panel",
+  "version": "0.2.0",
+  "minNoctaliaVersion": "4.1.2",
+  "author": "local",
+  "license": "MIT",
+  "description": "Antigravity CLI Panel with streaming output, session management, and Noctalia desktop integration via agy-bridge",
+  "tags": [
+    "Bar",
+    "Panel",
+    "AI",
+    "Productivity"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "panel": {
+      "defaultPosition": "right",
+      "detached": true,
+      "defaultHeightRatio": 0.55
+    },
+    "defaultSettings": {
+      "maxHistoryLength": 200,
+      "panelDetached": true,
+      "panelPosition": "right",
+      "panelHeightRatio": 0.55,
+      "panelWidth": 840,
+      "attachmentStyle": "connected",
+      "agy": {
+        "binary": "agy-bridge",
+        "workingDir": "",
+        "sandbox": false,
+        "dangerouslySkipPermissions": false
+      },
+      "widget": {
+        "style": "compact",
+        "showStatus": true
+      }
+    }
+  }
+}

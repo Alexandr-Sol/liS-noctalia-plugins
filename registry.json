@@ -38,6 +38,23 @@
         "AmneziaWG"
       ],
       "lastUpdated": "2026-06-05T11:25:00Z"
+    },
+    {
+      "id": "agy-panel",
+      "name": "Agy Panel",
+      "version": "0.2.0",
+      "official": false,
+      "author": "Alexandr-Sol",
+      "description": "Antigravity CLI Panel with streaming output, session management, and Noctalia desktop integration via agy-bridge",
+      "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "Panel",
+        "AI",
+        "Productivity"
+      ],
+      "lastUpdated": "2026-06-13T07:57:00Z"
     }
   ]
 }
