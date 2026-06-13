@@ -1,0 +1,40 @@
+{
+    "plugin": {
+        "title": "Переключатель DNS",
+        "short_title": "DNS"
+    },
+    "status": {
+        "checking": "Проверка...",
+        "switching": "Переключение...",
+        "default": "По умолчанию (ISP)",
+        "custom": "Польз. ({ip})",
+        "unknown": "Неизвестно"
+    },
+    "panel": {
+        "add_server": "Добавить сервер",
+        "cancel": "Отмена",
+        "save": "Сохранить",
+        "reset": "Сброс (ISP)",
+        "name_placeholder": "Название",
+        "ip_placeholder": "IP",
+        "routing_title": "Правила маршрутизации",
+        "routing_settings": "Настройки маршрутизации",
+        "routing_dns_label": "Целевой DNS-сервер",
+        "routing_custom_dns_ip": "Введите IP-адрес DNS",
+        "routing_domains_label": "Домены для маршрутизации",
+        "routing_add_button": "Добавить маршруты",
+        "routing_active_rules": "Активные правила маршрутизации",
+        "routing_no_rules": "Правила маршрутизации еще не добавлены.",
+        "routing_save_apply": "Сохранить и применить правила",
+        "routing_status_enabled": "Статус маршрутизации: ВКЛЮЧЕНА",
+        "routing_status_disabled": "Статус маршрутизации: ВЫКЛЮЧЕНА",
+        "routing_add_title": "Добавить правило маршрутизации",
+        "open_routing_file": "Открыть файл конфигурации маршрутизации systemd-resolved"
+    },
+    "error": {
+        "invalid_ip": "Неверный IP-адрес",
+        "invalid_routing_dns": "Неверный IP-адрес DNS для маршрутизации",
+        "invalid_rule": "Неверный формат домена или IP-адреса DNS.",
+        "apply_failed": "Не удалось применить настройки DNS"
+    }
+}

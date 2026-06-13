@@ -1,0 +1,40 @@
+{
+    "plugin": {
+        "title": "DNS Switcher",
+        "short_title": "DNS"
+    },
+    "status": {
+        "checking": "Checking...",
+        "switching": "Switching...",
+        "default": "Default (ISP)",
+        "custom": "Custom ({ip})",
+        "unknown": "Unknown"
+    },
+    "panel": {
+        "add_server": "Add Custom Server",
+        "cancel": "Cancel",
+        "save": "Save",
+        "reset": "Reset to Default (ISP)",
+        "name_placeholder": "Name",
+        "ip_placeholder": "IP",
+        "routing_title": "Routing Rules",
+        "routing_settings": "Domain Routing Settings",
+        "routing_dns_label": "Target DNS Server",
+        "routing_custom_dns_ip": "Enter DNS IP Address",
+        "routing_domains_label": "Domains to Route",
+        "routing_add_button": "Add Domain Route",
+        "routing_active_rules": "Active Routing Rules",
+        "routing_no_rules": "No routing rules added yet.",
+        "routing_save_apply": "Save & Apply Routing Rules",
+        "routing_status_enabled": "Domain Routing Status: ENABLED",
+        "routing_status_disabled": "Domain Routing Status: DISABLED",
+        "routing_add_title": "Add New Domain Routing Rule",
+        "open_routing_file": "Open systemd-resolved routing configuration file"
+    },
+    "error": {
+        "invalid_ip": "Invalid IP address",
+        "invalid_routing_dns": "Invalid Routing DNS IP address",
+        "invalid_rule": "Invalid Domain or DNS IP format.",
+        "apply_failed": "Failed to apply DNS"
+    }
+}

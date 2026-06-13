@@ -17,3 +17,4 @@ https://github.com/Alexandr-Sol/liS-noctalia-plugins
 1. **[AmneziaWG-dkms](amneziawg-dkms)** — Подключение к VPN AmneziaWG через утилиту `awg-quick` с использованием модуля ядра DKMS.
 2. **[AmneziaWG-go](amneziawg-go)** — Подключение к VPN AmneziaWG в пространстве пользователя через `amneziawg-go`.
 3. **[Agy Panel](agy-panel)** — Интеграция интерфейса Antigravity CLI в Noctalia в виде боковой панели чата.
+4. **[DNS Routing Switcher](dns-routing-switcher)** — Управление глобальными DNS-серверами и настройка Split DNS (маршрутизации доменов) в Noctalia.

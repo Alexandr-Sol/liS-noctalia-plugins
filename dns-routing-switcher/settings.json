@@ -1,0 +1,7 @@
+{
+  "routingEnabled": true,
+  "routingDns": "",
+  "routingDomains": "",
+  "savedServers": "[{\"label\":\"Xbox-DNS\",\"ip\":\"111.88.96.50 111.88.96.51\",\"isCustom\":true}]",
+  "routingRules": "[{\"domain\":\"generativelanguage.googleapis.com\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"oauth2.googleapis.com\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"cloudcode-pa.googleapis.com\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"aiplatform.googleapis.com\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"antigravity-unleash.goog\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"antigravity-cli-auto-updater-974169037036.us-central1.run.app\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"},{\"domain\":\"www.googleapis.com\",\"dnsIp\":\"111.88.96.50 111.88.96.51\"}]"
+}

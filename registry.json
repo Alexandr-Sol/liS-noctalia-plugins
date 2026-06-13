@@ -55,6 +55,21 @@
         "Productivity"
       ],
       "lastUpdated": "2026-06-13T07:57:00Z"
+    },
+    {
+      "id": "dns-routing-switcher",
+      "name": "DNS Routing Switcher",
+      "version": "1.0.0",
+      "official": false,
+      "author": "Antigravity",
+      "description": "DNS Manager with Split DNS (domain routing) for Noctalia.",
+      "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "Network"
+      ],
+      "lastUpdated": "2026-06-13T08:20:00Z"
     }
   ]
 }

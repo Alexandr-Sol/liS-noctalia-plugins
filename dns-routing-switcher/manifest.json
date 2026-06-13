@@ -1,0 +1,23 @@
+{
+  "id": "dns-routing-switcher",
+  "name": "DNS Routing Switcher",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "4.0.0",
+  "author": "Antigravity",
+  "license": "MIT",
+  "repository": "https://github.com/Alexandr-Sol/liS-noctalia-plugins",
+  "description": "DNS Manager with Split DNS (domain routing) for Noctalia.",
+  "tags": [
+    "Bar",
+    "Network"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "panel": "Panel.qml",
+    "barWidget": "BarWidget.qml",
+    "controlCenterWidget": "ControlCenterWidget.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  }
+}
