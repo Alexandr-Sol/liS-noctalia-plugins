@@ -16,6 +16,47 @@ Item {
     property var animatedMessageIds: ({})
     property alias flickable: chatFlickable
 
+    function parseToolMessages(text) {
+        var tools = [];
+        var remainingText = text;
+        
+        while (remainingText.indexOf("message:") === 0) {
+            var startIdx = 8;
+            var braceStart = remainingText.indexOf("{", startIdx);
+            if (braceStart === -1) break;
+            
+            var toolName = remainingText.substring(startIdx, braceStart);
+            var braceCount = 1;
+            var braceEnd = -1;
+            for (var i = braceStart + 1; i < remainingText.length; i++) {
+                if (remainingText[i] === "{") {
+                    braceCount++;
+                } else if (remainingText[i] === "}") {
+                    braceCount--;
+                    if (braceCount === 0) {
+                        braceEnd = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (braceEnd === -1) break;
+            
+            var content = remainingText.substring(braceStart + 1, braceEnd);
+            tools.push({
+                name: toolName,
+                content: content
+            });
+            
+            remainingText = remainingText.substring(braceEnd + 1).trim();
+        }
+        
+        return {
+            tools: tools,
+            cleanText: remainingText
+        };
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Style.marginS
@@ -710,6 +751,11 @@ Item {
         property var pluginApi
         property var mainInst
 
+        readonly property var parsedData: {
+            var text = mainInst && mainInst.currentAssistantBuffer ? mainInst.currentAssistantBuffer : "";
+            return chatViewRoot.parseToolMessages(text);
+        }
+
         radius: Style.radiusL
         color: Color.mSurface
         implicitHeight: streamInner.implicitHeight + Style.marginM * 2
@@ -761,9 +807,109 @@ Item {
                 }
             }
 
+            // Tools list during streaming (if any)
+            Column {
+                width: parent.width
+                spacing: 4 * Style.uiScaleRatio
+                visible: streamRoot.parsedData.tools.length > 0
+
+                Repeater {
+                    model: streamRoot.parsedData.tools
+                    delegate: Rectangle {
+                        id: streamToolCard
+                        width: parent.width
+                        height: expanded ? implicitHeight : 32 * Style.uiScaleRatio
+                        implicitHeight: streamToolColumn.implicitHeight + 8 * Style.uiScaleRatio
+                        color: Qt.alpha(Color.mOnSurface, 0.04)
+                        border.color: Qt.alpha(Color.mOutline, 0.1)
+                        border.width: 1
+                        radius: Style.radiusS
+                        clip: true
+                        
+                        property bool expanded: false
+
+                        Column {
+                            id: streamToolColumn
+                            width: parent.width
+                            spacing: 4 * Style.uiScaleRatio
+
+                            RowLayout {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.leftMargin: 8 * Style.uiScaleRatio
+                                anchors.rightMargin: 8 * Style.uiScaleRatio
+                                height: 32 * Style.uiScaleRatio
+
+                                NIcon {
+                                    icon: "terminal"
+                                    pointSize: Style.fontSizeS
+                                    color: Color.mPrimary
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+
+                                NText {
+                                    text: modelData.name
+                                    pointSize: Style.fontSizeS
+                                    font.weight: Font.Medium
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+
+                                NIcon {
+                                    icon: streamToolCard.expanded ? "chevron-up" : "chevron-down"
+                                    pointSize: Style.fontSizeS
+                                    color: Color.mOnSurfaceVariant
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                            }
+
+                            Rectangle {
+                                visible: streamToolCard.expanded
+                                width: parent.width - 16 * Style.uiScaleRatio
+                                x: 8 * Style.uiScaleRatio
+                                height: Math.min(250 * Style.uiScaleRatio, streamToolText.implicitHeight + 12 * Style.uiScaleRatio)
+                                color: Qt.alpha(Color.mSurface, 0.5)
+                                radius: Style.radiusS
+                                border.color: Qt.alpha(Color.mOutline, 0.08)
+                                border.width: 1
+
+                                ScrollView {
+                                    anchors.fill: parent
+                                    anchors.margins: 6 * Style.uiScaleRatio
+                                    clip: true
+
+                                    TextEdit {
+                                        id: streamToolText
+                                        width: parent.width
+                                        text: modelData.content
+                                        wrapMode: TextEdit.Wrap
+                                        readOnly: true
+                                        selectByMouse: true
+                                        color: Color.mOnSurface
+                                        font.pointSize: Style.fontSizeXS
+                                        font.family: "monospace"
+                                    }
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: function(mouse) {
+                                if (mouse.y <= 32 * Style.uiScaleRatio) {
+                                    streamToolCard.expanded = !streamToolCard.expanded;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             TextEdit {
                 width: parent.width
-                text: mainInst && mainInst.currentAssistantBuffer ? mainInst.currentAssistantBuffer : ""
+                text: streamRoot.parsedData ? streamRoot.parsedData.cleanText : ""
                 wrapMode: TextEdit.Wrap
                 textFormat: TextEdit.MarkdownText
                 readOnly: true
@@ -790,17 +936,19 @@ Item {
         property var pluginApi
         property var mainInst
 
-        property var extractedData: {
+        property var parsedData: {
             var text = (entry && entry.text !== undefined) ? entry.text : "";
+            var parsed = chatViewRoot.parseToolMessages(text);
+            var cleanText = parsed.cleanText;
             var paths = [];
             var regex = /\[Прикрепленное изображение:\s*([^\]]+)\]/g;
             var match;
-            var cleanText = text;
-            while ((match = regex.exec(text)) !== null) {
+            while ((match = regex.exec(cleanText)) !== null) {
                 paths.push(match[1].trim());
             }
             cleanText = cleanText.replace(/\[Прикрепленное изображение:\s*[^\]]+\]\n?/g, "").trim();
             return {
+                tools: parsed.tools,
                 cleanText: cleanText,
                 imagePaths: paths
             };
@@ -897,9 +1045,109 @@ Item {
                         pointSize: Style.fontSizeXS; color: Color.mOnSurfaceVariant; opacity: 0.5
                     }
                     NIconButton {
-                        visible: cardRoot.extractedData && cardRoot.extractedData.cleanText !== ""
+                        visible: cardRoot.parsedData && cardRoot.parsedData.cleanText !== ""
                         icon: "copy"; baseSize: Style.baseWidgetSize * 0.85; colorFg: Color.mOnSurfaceVariant
-                        onClicked: { if (cardRoot.mainInst && cardRoot.extractedData) cardRoot.mainInst.copyToClipboard(cardRoot.extractedData.cleanText); }
+                        onClicked: { if (cardRoot.mainInst && cardRoot.parsedData) cardRoot.mainInst.copyToClipboard(cardRoot.parsedData.cleanText); }
+                    }
+                }
+            }
+
+            // Tools list (if any)
+            Column {
+                width: parent.width
+                spacing: 4 * Style.uiScaleRatio
+                visible: cardRoot.parsedData.tools.length > 0
+
+                Repeater {
+                    model: cardRoot.parsedData.tools
+                    delegate: Rectangle {
+                        id: msgToolCard
+                        width: parent.width
+                        height: expanded ? implicitHeight : 32 * Style.uiScaleRatio
+                        implicitHeight: msgToolColumn.implicitHeight + 8 * Style.uiScaleRatio
+                        color: Qt.alpha(Color.mOnSurface, 0.04)
+                        border.color: Qt.alpha(Color.mOutline, 0.1)
+                        border.width: 1
+                        radius: Style.radiusS
+                        clip: true
+                        
+                        property bool expanded: false
+
+                        Column {
+                            id: msgToolColumn
+                            width: parent.width
+                            spacing: 4 * Style.uiScaleRatio
+
+                            RowLayout {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.leftMargin: 8 * Style.uiScaleRatio
+                                anchors.rightMargin: 8 * Style.uiScaleRatio
+                                height: 32 * Style.uiScaleRatio
+
+                                NIcon {
+                                    icon: "terminal"
+                                    pointSize: Style.fontSizeS
+                                    color: Color.mPrimary
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+
+                                NText {
+                                    text: modelData.name
+                                    pointSize: Style.fontSizeS
+                                    font.weight: Font.Medium
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+
+                                NIcon {
+                                    icon: msgToolCard.expanded ? "chevron-up" : "chevron-down"
+                                    pointSize: Style.fontSizeS
+                                    color: Color.mOnSurfaceVariant
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                            }
+
+                            Rectangle {
+                                visible: msgToolCard.expanded
+                                width: parent.width - 16 * Style.uiScaleRatio
+                                x: 8 * Style.uiScaleRatio
+                                height: Math.min(250 * Style.uiScaleRatio, msgToolText.implicitHeight + 12 * Style.uiScaleRatio)
+                                color: Qt.alpha(Color.mSurface, 0.5)
+                                radius: Style.radiusS
+                                border.color: Qt.alpha(Color.mOutline, 0.08)
+                                border.width: 1
+
+                                ScrollView {
+                                    anchors.fill: parent
+                                    anchors.margins: 6 * Style.uiScaleRatio
+                                    clip: true
+
+                                    TextEdit {
+                                        id: msgToolText
+                                        width: parent.width
+                                        text: modelData.content
+                                        wrapMode: TextEdit.Wrap
+                                        readOnly: true
+                                        selectByMouse: true
+                                        color: Color.mOnSurface
+                                        font.pointSize: Style.fontSizeXS
+                                        font.family: "monospace"
+                                    }
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: function(mouse) {
+                                if (mouse.y <= 32 * Style.uiScaleRatio) {
+                                    msgToolCard.expanded = !msgToolCard.expanded;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -911,7 +1159,7 @@ Item {
                     id: bodyLayout; width: parent.width; spacing: Style.marginXS
                     TextEdit {
                         Layout.fillWidth: true
-                        text: cardRoot.extractedData ? cardRoot.extractedData.cleanText : ""
+                        text: cardRoot.parsedData ? cardRoot.parsedData.cleanText : ""
                         wrapMode: TextEdit.Wrap
                         textFormat: TextEdit.MarkdownText
                         readOnly: true
@@ -939,7 +1187,7 @@ Item {
             Item {
                 width: parent.width
                 height: visible ? imagesFlow.implicitHeight : 0
-                visible: cardRoot.extractedData && cardRoot.extractedData.imagePaths && cardRoot.extractedData.imagePaths.length > 0
+                visible: cardRoot.parsedData && cardRoot.parsedData.imagePaths && cardRoot.parsedData.imagePaths.length > 0
 
                 Flow {
                     id: imagesFlow
@@ -947,7 +1195,7 @@ Item {
                     spacing: Style.marginS
 
                     Repeater {
-                        model: cardRoot.extractedData ? cardRoot.extractedData.imagePaths : []
+                        model: cardRoot.parsedData ? cardRoot.parsedData.imagePaths : []
                         delegate: Rectangle {
                             width: Math.min(160, imagesFlow.width)
                             height: 120
