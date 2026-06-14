@@ -629,6 +629,12 @@ Item {
                                         var paths = chatViewRoot.mainInstance.pastedImagePaths || [];
                                         chatViewRoot.mainInstance.pastedImagePaths = [...paths, trimmed];
                                     } else {
+                                        if (t.slice(-1) === "\n") {
+                                            t = t.slice(0, -1);
+                                        }
+                                        if (t.slice(-1) === "\r") {
+                                            t = t.slice(0, -1);
+                                        }
                                         var pos = inputTextArea.cursorPosition;
                                         inputTextArea.insert(pos, t);
                                     }
