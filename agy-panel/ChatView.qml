@@ -760,6 +760,24 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                 }
             }
+
+            TextEdit {
+                width: parent.width
+                text: mainInst && mainInst.currentAssistantBuffer ? mainInst.currentAssistantBuffer : ""
+                wrapMode: TextEdit.Wrap
+                textFormat: TextEdit.MarkdownText
+                readOnly: true
+                selectByMouse: true
+                color: Color.mOnSurface
+                font.pointSize: Style.fontSizeM
+                selectionColor: Color.mPrimary
+                selectedTextColor: Color.mOnPrimary
+                visible: text !== ""
+
+                onLinkActivated: function(link) {
+                    Qt.openUrlExternally(link);
+                }
+            }
         }
     }
 
