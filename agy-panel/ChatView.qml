@@ -14,6 +14,7 @@ Item {
     property real contentPreferredHeight: 800
 
     property var animatedMessageIds: ({})
+    property alias flickable: chatFlickable
 
     ColumnLayout {
         anchors.fill: parent
